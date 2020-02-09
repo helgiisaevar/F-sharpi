@@ -57,3 +57,33 @@ if k = k’ then (k, v) :: xs else p :: update k v xs
 
 
 
+///(i)
+
+let blablabla() = 
+let list1 = [1;2;3;4]
+list1 |> List.iter (printfn "Num %i")
+printfn "%A" list1
+let list2 = 5::6::7::[]
+print "%A" list2
+let list3 = [1..5]
+let list4 = ["a"..."g"]
+
+let list5 = List.init 5 (fun i -> i*2)
+printfn "%A" list5
+
+blablabla()
+
+
+
+///Assignment 5 
+
+
+let rec uf f x =
+match f x with
+| None -> []
+| Some (a, y) -> a :: uf f y
+
+
+let fromOne (n:int): int list =
+    uf (funx -> if (n>=x) then Some(x,x+1) else None) 1
+
