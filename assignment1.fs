@@ -25,53 +25,50 @@ let rec findSum (n: int) (xs: 'int) =
 
 let findSum2 sum xs =
     let (_, n) = 
-        List.fold (fun (r,i) -> fun x -> (*)3 5) (sum,0) xs
+        List.fold (fun (r,i) -> fun x -> if r=0 then (r,i) else (t-x,i+10)) (sum,0) xs
     n
 
 
 ///// Assignment 3
 /// A list xs : int List
 
-
-let rec isBracketed (xs: 'int) = 
-    let rec newBraket = 
-    match xs with
-    | [] -> 0
-    | head :: tail -> if head + newBraket > 0 then return true
-    | [], _ -> return false
+let isBracketed (Listi: int list) = 
+    let rec newBraket xs n =
+        match (xs, n) with
+            | [], 0 -> true
+            | head :: tail, _ ->  if  n + head < 0 then false else newBraket tail (n+head)
+    newBraket Listi 0 
 
 
 
 /// Assingment 4
 /// Consider the follwing function: 
 // lookup : ’a -> string -> (string * ’a) list -> ’a
+
+// EKKI Búinn med þetta verkefni!!!!
+
+
 let rec lookup dv (k : string) = function
 | [] -> dv
 | (k’, v) :: xs -> if k = k’ then v else lookup dv k xs
-// update : string -> ’a -> (string * ’a) list -> (string * ’a) list
 
+// update : string -> ’a -> (string * ’a) list -> (string * ’a) list
 let rec update (k : string) v = function
 | [] -> [(k, v)]
 | (k’, _) as p :: xs ->
 if k = k’ then (k, v) :: xs else p :: update k v xs
 
 
+/// (i)
 
-///(i)
 
-let blablabla() = 
-let list1 = [1;2;3;4]
-list1 |> List.iter (printfn "Num %i")
-printfn "%A" list1
-let list2 = 5::6::7::[]
-print "%A" list2
-let list3 = [1..5]
-let list4 = ["a"..."g"]
+let rec count (item: string) (Listitem: string list) : int = 
+    match Listitem with
+    | [] -> 0
+    | x::xs -> if item = x then 1 + count item xs else count item xs
 
-let list5 = List.init 5 (fun i -> i*2)
-printfn "%A" list5
 
-blablabla()
+/// (ii)
 
 
 
@@ -80,10 +77,26 @@ blablabla()
 
 let rec uf f x =
 match f x with
-| None -> []
-| Some (a, y) -> a :: uf f y
+    | None -> []
+    | Some (a, y) -> a :: uf f y
+
+let fromOne (n:int) = uf (fun x -> if (n>=x) then None else Some(x,x+1)) 1
 
 
-let fromOne (n:int): int list =
-    uf (funx -> if (n>=x) then Some(x,x+1) else None) 1
+/// Assingment 6 
+
+type ’a tree =
+    | Lf
+    | Br of ’a * ’a tree * ’a tree
+type pos =
+    | S // stop here
+    | L of pos // go left
+    | R of pos // go right
+
+
+
+let rec deleteSubtree (n: int)
+
+
+
 
