@@ -45,7 +45,6 @@ let isBracketed (Listi: int list) =
 /// Consider the follwing function: 
 // lookup : ’a -> string -> (string * ’a) list -> ’a
 
-// EKKI Búinn med þetta verkefni!!!!
 
 
 let rec lookup dv (k : string) = function
@@ -124,7 +123,7 @@ type fp =
 let rec  fromIntList (Listi : int list ) fp = 
     match Listi with
     | [] -> Nil 
-    | x :: tail fromIntList(List, tail)
+    | x :: tail -> IntCons(x, fromIntList ) 
 
 // (ii)
 
