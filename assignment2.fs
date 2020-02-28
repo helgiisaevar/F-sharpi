@@ -1,6 +1,6 @@
-
 module Assignment2
 
+// Helgi Sævar Þorsteinsson and Natalia Potamianou
 
 // Some types and functions used in Problems 1-4 
 
@@ -127,7 +127,7 @@ let lexParse (s : string) : expr = parse (lex s)
 
 // (i)
 
-(*
+
 
 {x = {w = 1; z = 2}; y = x}
 evaluates to ??
@@ -144,7 +144,7 @@ evaluates to ??
 y={x=11};z=12}
 z={10}
 
-*)
+
 
 // (ii)
 
