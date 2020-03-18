@@ -129,22 +129,20 @@ let lexParse (s : string) : expr = parse (lex s)
 
 
 
-{x = {w = 1; z = 2}; y = x}
-evaluates to ??
-x={w = 1; z = 2}
-y={w = 1; z = 2}
+// {x = {w = 1; z = 2}; y = x}
+// evaluates to ??
+// x={w = 1; z = 2}
+// y={w = 1; z = 2}
 
-{x = 20; y = {w = x}; z = {a = y}}
-evaluates to ??
-y = {w=20}
-z = {a={w=20}}
+// {x = 20; y = {w = x}; z = {a = y}}
+// evaluates to ??
+// y = {w=20}
+// z = {a={w=20}}
 
-{x = 10; y = {x = 11; z = 12}; z = x}
-evaluates to ??
-y={x=11};z=12}
-z={10}
-
-
+// {x = 10; y = {x = 11; z = 12}; z = x}
+// evaluates to ??
+// y={x=11};z=12}
+// z={10}
 
 // (ii)
 
