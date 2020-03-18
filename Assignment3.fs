@@ -1,5 +1,7 @@
 
+//Helgi Sævar and Natalia Potamianou
 module Assignment 3
+
 // Problem 1
 
 // let fun1 x b = (b ,x b) 
@@ -129,42 +131,31 @@ else finalMinus xr ys
 
 
 
-
-
 // Problem 4
 
-let rec union xs ys = 
-match xs with 
-    | [] -> ys
-    | x::xs -> if List.contains x ys then minus xs ys 
-    else x :: minus xs ys 
-
-
-let rec minus xs ys = 
-    matchxs with 
-    |[] -> []
-    | x::xr -> if List.contains x ys then minus xr ys else x :: minus xr ys
-
-let rec freevars e = 
-match e with 
-    | Var x -> [x]
-    | let (x, erhs, ebody) -> union (greevars erhs) (minus (freevars ebody) [x])
-    | call (efun, earg) -> (freevars efun) (freevars efun)
-    | Plus (e1, e2) -> union (freevars e1) (freevars e2)
-    | Minsu (e1, e2) -> union (freevars e1) (freevars e2)
-    | Times  (e1, e2) -> union (freevars e1) (freevars e2)
-    | Equal (e1, e2) -> union (freevars e1) (freevars e2)
-    | Less (e1, e2) -> union (freevars e1) (freevars e2)
-    | LetFun (e1, e2) -> union (freevars e1) (freevars e2)
-    |ITE(_, e1, e2) -> union (freevars e1) (freevars e2)
-    | Annot (e, _) -> freevars e
+let rec freevars e boundvars = 
+    match e with
+    | Var x -> if List.contains x boundvars then [] else [x]
+    | Let (x, erhs, ebody) -> freevars erhs (x :: boundvars) @ freevars ebody boundvars 
+    | Call (efun, earg) -> freevars efun boundvars @ freevars earg boundvars
+    | Plus (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
+    | Minus (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
+    | Times (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
+    | Equal (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
+    | Less (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
+    | LetFun (f,x,erhs,ebody) -> freevars erhs (f :: x :: boundvars) @ freevars ebody (x :: boundvars)
+    | (_, e1, e2) (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
+    | Annot (e, _) freevars e boundvars
     | _ -> []
 
-let rec finalMinus xs ys = 
-    match xs with
-    | [] -> [] 
-    | (y,e) :: xr -> if List.contains y ys then (y,e) :: finalMinus xr ys
-    else finalMinus xr ys
+let rec myfilter ( e: expr) (boundvars: string list) argenv = 
+    let allfreevars = freevars e boundvars
+    let rec filterHelp allfreevars argenv = 
+        match argenv with 
+            | [] -> []
+            | (y,e) :: env' if List.contains y allfreevars then (y,e) :: filterHelp allfreevars env'
+                            else filterHelp allfreevars env'
+    filterHelp allfreevars argenv
 
 let rec eval (e : expr) (env : value envir) : value =
     match e with
@@ -182,7 +173,7 @@ let rec eval (e : expr) (env : value envir) : value =
              eval ebody env'
          | _   -> failwith "expression called not a function"
     | LetFun (f, x, erhs, ebody) ->
-         let env' = (f, F (f, x, erhs, finalMinus env(freevars erhs))) :: env
+         let env' = (f, F (f, x, erhs,  (myfilter erhs [f;x] env))) :: env
          eval ebody env'
     | CstI i -> I i
     | Plus  (e1, e2) ->
