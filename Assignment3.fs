@@ -123,34 +123,29 @@ type value =
     | F of string * string * expr * value envir
                           // (fun f -> fun x -> e), [x1,v1; ...; xn,vn]
 
-let rec finalMinus xs ys = 
-match xs with 
-| [] -> [] 
-| (y,e) :: xr -> if List.contains y ys then (y,e) :: finalMinus xr ys
-else finalMinus xr ys
-
 
 
 // Problem 4
 
 let rec freevars e boundvars = 
-    match e with
+    match e with 
     | Var x -> if List.contains x boundvars then [] else [x]
-    | Let (x, erhs, ebody) -> freevars erhs (x :: boundvars) @ freevars ebody boundvars 
+    | Let (x, erhs, ebody) -> freevars erhs (x :: boundvars) @ freevars ebody boundvars
     | Call (efun, earg) -> freevars efun boundvars @ freevars earg boundvars
     | Plus (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
     | Minus (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
     | Times (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
-    | Equal (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
+    | Equal (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
     | Less (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
-    | LetFun (f,x,erhs,ebody) -> freevars erhs (f :: x :: boundvars) @ freevars ebody (x :: boundvars)
-    | (_, e1, e2) (e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
-    | Annot (e, _) freevars e boundvars
+    | LetFun (f, x, erhs, ebody) -> freevars erhs (f :: x :: boundvars) @ freevars ebody (x :: boundvars)
+    | ITE (_, e1, e2) -> freevars e1 boundvars @ freevars e2 boundvars
+    | Annot (e, _) -> freevars e boundvars
     | _ -> []
 
-let rec myfilter ( e: expr) (boundvars: string list) argenv = 
-    let allfreevars = freevars e boundvars
+let rec myfilter (e: expr) (boundvars: string list) argenv = 
+    let allfreevars = freevars e boundvar
     let rec filterHelp allfreevars argenv = 
+
         match argenv with 
             | [] -> []
             | (y,e) :: env' if List.contains y allfreevars then (y,e) :: filterHelp allfreevars env'
@@ -173,7 +168,7 @@ let rec eval (e : expr) (env : value envir) : value =
              eval ebody env'
          | _   -> failwith "expression called not a function"
     | LetFun (f, x, erhs, ebody) ->
-         let env' = (f, F (f, x, erhs,  (myfilter erhs [f;x] env))) :: env
+         let env' = (f, F (f, x, erhs, (myfilter erhs [f;x] env))) :: env
          eval ebody env'
     | CstI i -> I i
     | Plus  (e1, e2) ->
@@ -393,7 +388,6 @@ let rec stypToTyp = function
   | SFun (t1, t2) -> Fun (stypToTyp t1, stypToTyp t2)
 
 
-
 // Problem 5
 
 
@@ -450,9 +444,10 @@ let rec infer (e : expr) (lvl : int) (env : typescheme envir) : typ =
       let t1 = infer e1 lvl env
       let t2 = infer e2 lvl env
       unify Bool (infer e lvl env); unify t1 t2; t1
-    | Annot (e, t) ->e1 infer e lvl env
-    | t1 = stypToTyp t
-    | unify t e; t
+    | Annot (e, t) ->
+        let e1 = infer e lvl env
+        let t1 = stypToTyp t
+        unify t1 e1; t1
 
 let inferTop e =
     tyvarno := 0; showType (infer e 0 [])
